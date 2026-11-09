@@ -496,3 +496,29 @@ address { font-style: normal; }
 .pt-logo img { max-height: 122px; max-width: 88%; height: auto; width: auto; object-fit: contain; }
 @media (max-width: 1100px) { .pt-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .pt-grid { grid-template-columns: 1fr; } }
+/* antes e depois v11 */
+.ad-intro { color: var(--ink-2); margin: -.4em 0 18px; }
+.ad-grid-proc { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+.ad-compare { touch-action: pan-y; }
+.ad-compare .ad-before img { width: 100%; height: 100%; object-fit: cover; }
+.ad-handle { position: absolute; top: 50%; left: var(--pos); width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: #fff; color: var(--navy); display: grid; place-items: center; box-shadow: 0 4px 14px rgba(0,0,0,.3); pointer-events: none; z-index: 2; }
+.ad-handle svg { width: 22px; height: 22px; }
+.ad-compare input { z-index: 3; }
+.ad-compare:focus-within { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.ad-tag { z-index: 2; }
+.ad-side { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.ad-side > div { position: relative; aspect-ratio: 4/5; overflow: hidden; }
+.ad-side img { width: 100%; height: 100%; object-fit: cover; }
+.ad-pend { display: block; margin-top: 6px; font-family: var(--head); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: #8A4B00; background: #FFF1D6; padding: 3px 8px; width: fit-content; }
+@media (max-width: 760px) { .ad-grid-proc { grid-template-columns: 1fr; } }
+/* 3 etapas */
+.ad-stages { position: relative; aspect-ratio: 4/5; overflow: hidden; background: var(--navy); }
+.ad-stage { position: absolute; inset: 0; opacity: 0; }
+.ad-stage.is-on { opacity: 1; }
+.ad-stage img { width: 100%; height: 100%; object-fit: cover; }
+.ad-steps { position: absolute; left: 12px; right: 12px; top: 12px; display: flex; gap: 6px; z-index: 3; }
+.ad-steps button { flex: 1; font-family: var(--head); font-weight: 700; font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; padding: 7px 6px; border: 1px solid rgba(255,255,255,.55); background: rgba(7,20,47,.6); color: #fff; cursor: pointer; }
+.ad-steps button[aria-pressed="true"] { background: #fff; color: var(--navy); border-color: #fff; }
+.ad-steps button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.ad-stages input[type=range] { position: absolute; left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px); z-index: 3; accent-color: #fff; }
+.ad-stages::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, transparent, rgba(7,20,47,.55)); pointer-events: none; z-index: 2; }
