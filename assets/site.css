@@ -522,3 +522,4 @@ address { font-style: normal; }
 .ad-steps button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 .ad-stages input[type=range] { position: absolute; left: 16px; right: 16px; bottom: 14px; width: calc(100% - 32px); z-index: 3; accent-color: #fff; }
 .ad-stages::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 70px; background: linear-gradient(180deg, transparent, rgba(7,20,47,.55)); pointer-events: none; z-index: 2; }
+@media (min-width: 901px) { .split-rev > :first-child { order: 2; } .split-rev > :last-child { order: 1; } }
