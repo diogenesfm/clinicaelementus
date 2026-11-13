@@ -243,4 +243,67 @@
     })
     show(0)
   })
+
+  /* ===== Presenteie um amigo ===== */
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-indique]').forEach(function (f) {
+      var btn = f.querySelector('.ficha-btn'), help = f.querySelector('#ind-help')
+      var tog = f.querySelector('[data-toggle-id]'), idf = f.querySelector('[data-id-fields]'), anon = f.querySelector('[data-anon-note]')
+      var endpoint = f.getAttribute('data-endpoint') || ''
+      var digits = function (v) { return (v || '').replace(/\D/g, '') }
+      var phoneOk = function (v) { var d = digits(v); if (d.indexOf('55') === 0 && d.length > 11) d = d.slice(2); return d.length === 10 || d.length === 11 }
+      var val = function (n) { var el = f.elements[n]; return el ? (el.value || '').trim() : '' }
+      function problem() {
+        if (!f.querySelector('input[name=presente]:checked')) return 'Escolha o presente.'
+        if (val('amigo_nome').length < 2) return 'Informe o primeiro nome do seu amigo.'
+        if (!phoneOk(val('amigo_whatsapp'))) return 'Confira o WhatsApp do seu amigo, com DDD.'
+        if (tog.checked) {
+          if (val('indicador_nome').length < 2) return 'Informe seu nome ou desmarque “Quero me identificar”.'
+          if (!phoneOk(val('indicador_whatsapp'))) return 'Confira o seu WhatsApp, com DDD.'
+        }
+        if (!f.elements.consentimento.checked) return 'Marque a confirmação de que conhece essa pessoa.'
+        return ''
+      }
+      function refresh() {
+        var p = problem()
+        btn.setAttribute('aria-disabled', p ? 'true' : 'false')
+        help.textContent = p ? p : 'Tudo certo. É só enviar o presente.'
+      }
+      tog.addEventListener('change', function () {
+        idf.hidden = !tog.checked; anon.hidden = tog.checked
+        if (!tog.checked) { f.elements.indicador_nome.value = ''; f.elements.indicador_whatsapp.value = '' }
+        refresh()
+      })
+      f.addEventListener('input', refresh); f.addEventListener('change', refresh)
+      function recent() { try { var t = JSON.parse(localStorage.getItem('elx_ind') || '[]'); var now = Date.now(); return t.filter(function (x) { return now - x < 864e5 }) } catch (e) { return [] } }
+      function remember() { try { var t = recent(); t.push(Date.now()); localStorage.setItem('elx_ind', JSON.stringify(t)) } catch (e) {} }
+      function done(preview) {
+        var nome = val('amigo_nome').split(' ')[0]
+        f.innerHTML = '<div class="ind-done" tabindex="-1"><div class="ind-gift" aria-hidden="true">🎁</div><h3>Presente enviado!</h3><p>A equipe vai mandar uma mensagem discreta para o ' + nome.replace(/[<>&"]/g, '') + ' nos próximos dias úteis, sem dizer quem indicou.' + (preview ? '</p><p><b>Prévia:</b> o formulário ainda não está ligado à planilha; nada foi gravado.' : '') + '</p><button type="button" class="btn btn-outline-dark btn-sm" data-again>Presentear outro amigo</button></div>'
+        var d = f.querySelector('.ind-done'); d.focus()
+        f.querySelector('[data-again]').addEventListener('click', function () { location.reload() })
+      }
+      f.addEventListener('submit', function (e) {
+        e.preventDefault()
+        var p = problem()
+        if (p) { help.textContent = p; var first = f.querySelector('input[name=presente]:checked') ? null : f.querySelector('input[name=presente]'); (first || f.querySelector('input:invalid') || btn).focus(); return }
+        if (f.elements.site.value) { done(false); return } // honeypot: finge sucesso
+        if (recent().length >= 3) { help.textContent = 'Você já enviou 3 presentes hoje. Tente de novo amanhã.'; return }
+        var pres = f.querySelector('input[name=presente]:checked')
+        var data = {
+          presente: pres.value, amigo_nome: val('amigo_nome').split(' ')[0], amigo_whatsapp: digits(val('amigo_whatsapp')),
+          anonimo: !tog.checked, indicador_nome: tog.checked ? val('indicador_nome') : '', indicador_whatsapp: tog.checked ? digits(val('indicador_whatsapp')) : '',
+          consentimento: true, origem: location.pathname
+        }
+        btn.setAttribute('aria-disabled', 'true'); btn.textContent = 'Enviando…'
+        var ok = function () { remember(); if (window.ELEMENTUS_TRACK) window.ELEMENTUS_TRACK('indicacao_enviada', { presente: pres.getAttribute('data-slug'), anonimo: data.anonimo }); done(!endpoint) }
+        if (!endpoint) { setTimeout(ok, 500); return }
+        fetch(endpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(data) })
+          .then(ok)
+          .catch(function () { btn.setAttribute('aria-disabled', 'false'); btn.textContent = 'Enviar o presente'; help.textContent = 'Não foi possível enviar agora. Verifique a conexão e tente de novo.' })
+      })
+      anon.hidden = false
+      refresh()
+    })
+  })
 })()
